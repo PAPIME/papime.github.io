@@ -111,6 +111,8 @@
 			visibility: visible;
 		}
 	</style>
+<link id='-gd-engine-icon' rel='icon' type='image/png' href='Figura2.4Int.icon.png' />
+<link rel='apple-touch-icon' href='Figura2.4Int.apple-touch-icon.png'/>
 
 </head>
 <body>
@@ -133,18 +135,11 @@
 		<div id='status-notice' class='godot' style='display: none;'></div>
 	</div>
 
-	<script type='text/javascript' src='index.js'></script>
+	<script type='text/javascript' src='Figura2.4Int.js'></script>
 	<script type='text/javascript'>//<![CDATA[
 
-		const myWasm = 'index';
-        const myPck = 'SOFUNI.pck';
-        const engine = new Engine();
-        Promise.all([
-        // Load and init the engine
-            engine.init(myWasm),
-        // And the pck concurrently
-            engine.preloadFile(myPck),
-        ]);
+		const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"executable":"Figura2.4Int","experimentalVK":false,"fileSizes":{"Figura2.4Int.pck":897616,"Figura2.4Int.wasm":13328615},"focusCanvas":true,"gdnativeLibs":[]};
+		var engine = new Engine(GODOT_CONFIG);
 
 		(function() {
 			const INDETERMINATE_STATUS_STEP_MS = 100;
@@ -225,10 +220,25 @@
 				displayFailureNotice('WebGL not available');
 			} else {
 				setStatusMode('indeterminate');
-				engine.start({ args: ['--main-pack', myPck] }).then(() => {
+				engine.startGame({
+					'onProgress': function (current, total) {
+						if (total > 0) {
+							statusProgressInner.style.width = current/total * 100 + '%';
+							setStatusMode('progress');
+							if (current === total) {
+								// wait for progress bar animation
+								setTimeout(() => {
+									setStatusMode('indeterminate');
+								}, 500);
+							}
+						} else {
+							setStatusMode('indeterminate');
+						}
+					},
+				}).then(() => {
 					setStatusMode('hidden');
 					initializing = false;
-				});
+				}, displayFailureNotice);
 			}
 		})();
 	//]]></script>

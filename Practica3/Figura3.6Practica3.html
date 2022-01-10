@@ -111,6 +111,8 @@
 			visibility: visible;
 		}
 	</style>
+<link id='-gd-engine-icon' rel='icon' type='image/png' href='Figura3.6Practica3.icon.png' />
+<link rel='apple-touch-icon' href='Figura3.6Practica3.apple-touch-icon.png'/>
 
 </head>
 <body>
@@ -133,18 +135,11 @@
 		<div id='status-notice' class='godot' style='display: none;'></div>
 	</div>
 
-	<script type='text/javascript' src='Practica3.js'></script>
+	<script type='text/javascript' src='Figura3.6Practica3.js'></script>
 	<script type='text/javascript'>//<![CDATA[
 
-		const myWasm = 'Practica3';
-        const myPck = 'MinimoProductoViable.pck';
-        const engine = new Engine();
-        Promise.all([
-        // Load and init the engine
-            engine.init(myWasm),
-        // And the pck concurrently
-            engine.preloadFile(myPck),
-        ]);
+		const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"executable":"Figura3.6Practica3","experimentalVK":false,"fileSizes":{"Figura3.6Practica3.pck":918560,"Figura3.6Practica3.wasm":13328615},"focusCanvas":true,"gdnativeLibs":[]};
+		var engine = new Engine(GODOT_CONFIG);
 
 		(function() {
 			const INDETERMINATE_STATUS_STEP_MS = 100;
@@ -225,10 +220,25 @@
 				displayFailureNotice('WebGL not available');
 			} else {
 				setStatusMode('indeterminate');
-				engine.start({ args: ['--main-pack', myPck] }).then(() => {
+				engine.startGame({
+					'onProgress': function (current, total) {
+						if (total > 0) {
+							statusProgressInner.style.width = current/total * 100 + '%';
+							setStatusMode('progress');
+							if (current === total) {
+								// wait for progress bar animation
+								setTimeout(() => {
+									setStatusMode('indeterminate');
+								}, 500);
+							}
+						} else {
+							setStatusMode('indeterminate');
+						}
+					},
+				}).then(() => {
 					setStatusMode('hidden');
 					initializing = false;
-				});
+				}, displayFailureNotice);
 			}
 		})();
 	//]]></script>
